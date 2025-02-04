@@ -1,6 +1,7 @@
 // our-domain.com/new-meetup
 import Head from "next/head";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 import NewMeetupForm from "../../components/meetups/NewMeetupForm";
 
@@ -8,17 +9,19 @@ function NewMeetupPage() {
   const router = useRouter();
 
   async function addMeetupHandler(enteredMeetupData) {
-    const response = await fetch("/api/new-meetup", {
-      method: "POST",
-      body: JSON.stringify(enteredMeetupData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const response = await axios.post("/api/new-meetup", enteredMeetupData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    const data = await response.json();
-
-    router.push("/");
+      if (response.status === 201) {
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Error adding meetup:", error);
+    }
   }
 
   return (
